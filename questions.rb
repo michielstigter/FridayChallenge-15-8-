@@ -236,12 +236,18 @@ end
 # the list of bank holidays is here:
 # https://www.gov.uk/bank-holidays
 def is_a_2014_bank_holiday?(date)
+  holidays = File.read('./england-and-wales.ics')
+  holidays.include?('DTSTART;VALUE=DATE:'+date.strftime('%Y%m%d'))
 end
 
 # given your birthday this year, this method tells you
 # the next year when your birthday will fall on a friday
 # e.g. january 1st, will next be a friday in 2016
 def your_birthday_is_on_a_friday_in_the_year(birthday)
+  until birthday.friday?
+    birthday = (birthday + 31536000)
+  end
+  birthday.year
 end
 
 # in a file, total the number of times words of different lengths
@@ -250,6 +256,18 @@ end
 # and 1 that is 4 letters long. Return it as a hash in the format
 # word_length => count, e.g. {2 => 1, 3 => 5, 4 => 1}
 def count_words_of_each_length_in_a_file(file_path)
+  words = File.read(file_path)
+  words.gsub! ".", ""
+  words.gsub! ",", ""
+  array = words.split
+  @lengthcount = []
+  array.each do |word|
+    @lengthcount << word.length
+  end
+  @lengthcount.sort.each_with_object({}) do |length, key|
+    key[length] ||= 0
+    key[length] += 1
+  end
 end
 
 # implement fizzbuzz without modulo, i.e. the % method
